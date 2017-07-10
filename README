@@ -1,0 +1,80 @@
+Gabble project---
+
+-cd into a directory with an Express app.
+-Run npm install sequelize pg --save. pg is the library for using PostgreSQL.
+-Run sequelize init. This will create the config, migrations, seeders, and models directories.
+-Edit config/config.json. The dialect should be "postgres" and the username should be your local username. Change the database names to reflect the actual project.
+-Create the development database using createdb on the command line.
+-Run sequelize db:migrate to test your connection.
+-To create a model with Sequelize, you run sequelize model:create
+
+
+
+install ---------------
+		npm init
+        Express
+        body-parser
+        express-validator and its underlying library, node-validator
+        express-session
+        sequelize
+        mustache-express
+        
+        
+        
+mustache pages-------------------  
+        
+        homepage.mustache
+    	sign_up.mustache
+    	log_in.mustache
+    	create_a_new_gab.mustache
+    	see_list_of_likes.mustache
+    	
+set up migrations------------------
+		
+		create_user.js "user model"
+		create_gab.js  "gab model"
+		join_user_to_gab.js "gab and users"
+		    	             "username uniqueness"
+  							 "likes"	
+require----
+	const models = require("./models") 
+	ex: const models = require("./models");
+			models.User.findOne().then(function (user) {
+  					console.log(user);
+			})    	
+    	
+    	
+    	
+      
+Users should:
+
+have a username and password for logging in
+have a display name
+
+Messages should:
+
+be associated with a user who wrote them
+have up to 140 characters of text
+
+Likes should:
+
+be associated with a user who made the like and a message that was liked
+
+The application should have ways to do the following:
+
+Sign up as a new user
+Log in------------------------------------------ Express, Mustache, and express-session
+Log out----------------------------------------- Express, Mustache, and express-session
+View all messages with the newest first--------- Use timestamp to parse the data
+Create a new message---------------------------- Allow strings of char to be stored and posted back
+Delete one of your own messages----------------- DELETE FROM table_name WHERE condition;
+Like a message---------------------------------- on click? then stored in the model...?
+See who liked a message------------------------- display
+
+
+   
+relationships-one to many-- user to gab--userID
+			belongs--gab to user
+			one to many--gab to like--messageID
+			belongs--like to gab
+			one to one--like to user--userID
