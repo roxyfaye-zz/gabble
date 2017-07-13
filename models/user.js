@@ -9,7 +9,10 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        // associations can be defined here
+
+        user.hasMany(models.gab,{foreignKey: 'userId'}),
+        user.hasMany(models.like,{foreignKey: 'userId'})
+
       }
     }
   });
