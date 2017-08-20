@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        gab.hasMany(model.Like, {foreignKey:'messageId'});
+        gab.hasMany(models.Like, {foreignKey:'messageId'});
         gab.belongsTo(models.Users, {foreignKey:'userId'});
       }
     }
