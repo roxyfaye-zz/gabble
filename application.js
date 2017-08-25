@@ -32,70 +32,87 @@ application.get('/', (request, response) => {
     response.render('home');
 });
 
-
-application.get('/login', function (req, res) {
-  if (req.session && req.session.authenticated) {
-    var user = models.user.findOne({
-      where: {
-        username: req.session.username,
-        password: req.session.password
-      }
-    }).then(function (user) {
-      if (user) {
-        req.session.username = req.body.username;
-        req.session.userId = user.dataValues.id;
-        let username = req.session.username;
-        let userid = req.session.userId;
-        res.render('home', {
-          user: user
-        });
-      }
-    });
-  } else {
-    res.redirect('/login')
-  }
+application.get('/login', (request, response) => {
+    response.render('login');
 });
 
-application.post('/login', function (req, res) {
-  let username = req.body.username;
-  let password = req.body.password;
+application.get('/signup', function(request, response) {
+   response.render('signup');
+ });
 
-  models.user.findOne({
-    where: {
-      username: username,
-      password: password
-    }
-  }).then(user => {
-    if (user.password == password) {
-      req.session.username = username;
-      req.session.userId = user.dataValues.id;
-      req.session.authenticated = true;
-      console.log(req.session);
+application.get('/newgab', function(request, response) {
+   response.render('newgab');
+ });
 
-      res.redirect('/home');
-    } else {
-      res.redirect('/login');
-      console.log("This is my session", req.session)
-    }
-  })
-});
 
-application.post('/signup', function (req, res) {
-  const user = models.user.build({
-    name: req.body.name,
-    email: req.body.email,
-    username: req.body.username,
-    password: req.body.password
-  })
-  console.log(req.body);
 
-  user.save().then(function (user) {
-    req.username = user.username;
-    req.session.authenticated = true;
-    res.redirect('/login')
-    console.log(req.session);
-  })
-});
+// application.get('/login', function (req, res) {
+//   if (req.session && req.session.authenticated) {
+//     var user = models.user.findOne({
+//       where: {
+//         username: req.session.username,
+//         password: req.session.password
+//       }
+//     }).then(function (user) {
+//       if (user) {
+//         req.session.username = req.body.username;
+//         req.session.userId = user.dataValues.id;
+//         let username = req.session.username;
+//         let userid = req.session.userId;
+//         res.render('home', {
+//           user: user
+//         });
+//       }
+//     });
+//   } else {
+//     response.redirect('/login')
+//   }
+// });
+
+// application.post('/login', function (req, res) {
+//   let username = req.body.username;
+//   let password = req.body.password;
+
+//   models.user.findOne({
+//     where: {
+//       username: username,
+//       password: password
+//     }
+//   }).then(user => {
+//     if (user.password == password) {
+//       req.session.username = username;
+//       req.session.userId = user.dataValues.id;
+//       req.session.authenticated = true;
+//       console.log(req.session);
+
+//       res.redirect('/home');
+//     } else {
+//       res.redirect('/login');
+//       console.log("This is my session", req.session)
+//     }
+//   })
+// });
+
+
+
+
+
+// application.post('/signup', function (req, res) {
+//   const user = models.user.build({
+//     name: req.body.name,
+//     email: req.body.email,
+//     username: req.body.username,
+//     password: req.body.password
+//   })
+//   console.log(req.body);
+
+//   user.save().then(function (user) {
+//     req.username = user.username;
+//     req.session.authenticated = true;
+//     res.redirect('/login')
+//     console.log(req.session);
+//   })
+// });
 
 // application.post('/newgab', function (req, res) {
 //   const post = models.post.build({
