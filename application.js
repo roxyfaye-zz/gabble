@@ -14,7 +14,7 @@ const cookieParser = require('cookie-parser');
 
 application.engine('mustache', mustacheExpress());
 application.set('view engine', 'mustache');
-application.set('views','./views');
+application.set('views', './views');
 application.use('/files', express.static(path.join(__dirname, 'public')));
 
 application.use(bodyParser.urlencoded({
@@ -23,40 +23,53 @@ application.use(bodyParser.urlencoded({
 application.use(cookieParser());
 
 application.use(session({
-	secret: "gabble",
-	resave: false,
-	saveUninitialized: true
+  secret: "gabble",
+  resave: false,
+  saveUninitialized: true
 }));
 
+application.use (function(request, response, next){
+  if(request.session.user){
+    request.session.isAuthenticated = true;
+  }else{
+    request.session.isAuthenticated = false;
+  }
+  next()
+});
+
 application.get('/', (request, response) => {
-    response.render('home');
+  response.render('home');
 });
 
 application.get('/login', (request, response) => {
-    response.render('login');
+  response.render('login');
 });
 
-application.get('/signup', function(request, response) {
-   response.render('signup');
- });
+application.get('/signup', function (request, response) {
+  response.render('signup');
+});
 
-application.get('/newgab', function(request, response) {
-   response.render('newgab');
- });
+application.get('/newgab', function (request, response) {
+  response.render('newgab');
+});
 
 
 
-// application.get('/login', function (req, res) {
+
+
+// application.post('/login', function (req, res) {
 //   if (req.session && req.session.authenticated) {
-//     var user = models.user.findOne({
+//     var user = models.users.findOne({
 //       where: {
 //         username: req.session.username,
 //         password: req.session.password
 //       }
-//     }).then(function (user) {
-//       if (user) {
+//     })
+//     console.log(user)
+//     .then(function (user) {
+//       if (users) {
 //         req.session.username = req.body.username;
-//         req.session.userId = user.dataValues.id;
+//         req.session.userId = users.dataValues.id;
 //         let username = req.session.username;
 //         let userid = req.session.userId;
 //         res.render('home', {
@@ -65,82 +78,87 @@ application.get('/newgab', function(request, response) {
 //       }
 //     });
 //   } else {
-//     response.redirect('/login')
+//     res.redirect('/login')
 //   }
 // });
 
-// application.post('/login', function (req, res) {
-//   let username = req.body.username;
-//   let password = req.body.password;
+application.post('/login', async(req, res) => {
+  console.log(req.body.email);
+  let email = req.body.email;
+  let password = req.body.password;
+  console.log(email);
 
-//   models.user.findOne({
-//     where: {
-//       username: username,
-//       password: password
-//     }
-//   }).then(user => {
-//     if (user.password == password) {
-//       req.session.username = username;
-//       req.session.userId = user.dataValues.id;
-//       req.session.authenticated = true;
-//       console.log(req.session);
+  try {
+    const user = await models.Users.findOne({
+      where: {
+        email: email,
+        password: password
+      }
+    });
 
-//       res.redirect('/home');
-//     } else {
-//       res.redirect('/login');
-//       console.log("This is my session", req.session)
-//     }
-//   })
-// });
+    req.session.user = user.email;
+    req.session.isAuthenticated = true;
+    req.session.userId = user.displayname;
 
+    return res.redirect('/newgab');
 
+  } catch (e) {
+    res.redirect('/signup');
+    console.log("This is my session", req.session)
+  }
+});
 
 
 
-// application.post('/signup', function (req, res) {
-//   const user = models.user.build({
-//     name: req.body.name,
-//     email: req.body.email,
-//     username: req.body.username,
-//     password: req.body.password
-//   })
-//   console.log(req.body);
 
-//   user.save().then(function (user) {
-//     req.username = user.username;
-//     req.session.authenticated = true;
-//     res.redirect('/login')
-//     console.log(req.session);
-//   })
-// });
 
-// application.post('/newgab', function (req, res) {
-//   const post = models.post.build({
-//     userId: req.session.userId,
-//     title: req.body.gabtitle,
-//     body: req.body.gabbody
-//   })
-//   post.save().then(function (post) {
-//     console.log(post);
-//   })
-// });
+application.post('/signup', function (req, res) {
+  const users = models.Users.build({
+    name: req.body.name,
+    email: req.body.email,
+    displayname: req.body.displayname,
+    password: req.body.password
+  })
+  console.log(req.body);
 
-// application.get('/home', function (req, res) {
-//   models.post.findAll().then(function (posts) {
-//     res.render('home', {
-//       posts: posts,
-//       name: req.session.username
-//     })
-//   })
-// });
+  users.save().then(function (Users) {
+    req.username = users.username;
+    req.session.authenticated = true;
+    res.redirect('/login')
+    console.log(req.session);
+  })
+});
+
+application.post('/newgab', async (req, res) => {
+  console.log(req.body.message);
+  console.log(req.session.userId);
+    console.log('newGab');
+  const gab = await models.gab.create({
+    messageId: req.session.userId,
+    message: req.body.message
+  })
+  
+    console.log(gab);
+    res.redirect('/');
+});
+
+application.get('/home', function (req, res) {
+  if (req.session.user) {
+ var model = models.gab.findAll().then(function (gab) {
+    res.render('/home', {model});
+    })
+ 
+}else {
+    res.redirect('/signup');
+  }
+});
 
 // application.get('/newgab', function (req, res) {
-//   models.post.findAll().then(function (posts) {
-//     res.render('newgab', {
-//       posts: posts,
-//       name: req.session.username
-//     })
-//   })
+//   if(req.session.user){
+    
+//    else {
+//      res.redirect('/login');
+//    }
 // });
 
 // application.post('/home', function (req, res) {
@@ -185,7 +203,7 @@ application.get('/newgab', function(request, response) {
 
 // application.get('/logout', function (req, res) {
 //   req.session.destroy(function (err) {})
-//   res.render('home');
+//   res.render('/login');
 //   console.log(req.session);
 // });
 

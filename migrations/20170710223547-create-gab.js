@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.STRING(140)
       },
       messageId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING(144)
       },
       createdAt: {
         allowNull: false,

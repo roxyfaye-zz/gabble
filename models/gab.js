@@ -3,7 +3,7 @@ module.exports = function(sequelize, DataTypes) {
   var gab = sequelize.define('gab', {
     userId: DataTypes.INTEGER,
     message: DataTypes.STRING(140),
-    messageId: DataTypes.INTEGER
+    messageId: DataTypes.STRING(144)
   }, {
     classMethods: {
       associate: function(models) {
