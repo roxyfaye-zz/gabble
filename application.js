@@ -52,7 +52,9 @@ application.get('/signup', function (request, response) {
 application.get('/newgab', function (request, response) {
   response.render('newgab');
 });
-
+application.get('/liked', (request, response) => {
+  response.render('liked');
+});
 
 
 
@@ -119,38 +121,47 @@ application.post('/signup', function (req, res) {
     displayname: req.body.displayname,
     password: req.body.password
   })
-  console.log(req.body);
+  // console.log(req.body);
 
   users.save().then(function (Users) {
     req.username = users.username;
     req.session.authenticated = true;
     res.redirect('/login')
-    console.log(req.session);
+    // console.log(req.session);
   })
 });
 
 application.post('/newgab', async (req, res) => {
-  console.log(req.body.message);
-  console.log(req.session.userId);
-    console.log('newGab');
+  // console.log(req.body.message);
+  // console.log(req.session.userId);
+  // console.log('newGab');
   const gab = await models.gab.create({
     messageId: req.session.userId,
     message: req.body.message
   })
   
-    console.log(gab);
+   //console.log(gab);
     res.redirect('/');
 });
 
-application.get('/home', function (req, res) {
-  if (req.session.user) {
- var model = models.gab.findAll().then(function (gab) {
-    res.render('/home', {model});
-    })
- 
-}else {
-    res.redirect('/signup');
-  }
+application.get('/home', async (req, res) => {
+  // if (req.session.user) {
+ var userGabs = await models.gab.findAll ({
+  order: [['createdAt', 'DESC']],
+  // include: [models.Users, models.Like]
+    });
+    // const coffee = { userGabs: userGabs, name: request.session.name };
+    console.log(userGabs);
+   var coffee = {};
+   coffee.userGabs = userGabs;
+    console.log(coffee)
+    console.log(coffee.dataValues)
+    console.log(coffee.userGabs)
+    console.log(coffee.dataValues.userGabs)
+    res.render('/home', {coffee});
+// }else {
+//     res.redirect('/signup');
+//   }
 });
 
 // application.get('/newgab', function (req, res) {
