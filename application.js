@@ -37,9 +37,9 @@ application.use (function(request, response, next){
   next()
 });
 
-application.get('/', (request, response) => {
-  response.render('home');
-});
+// application.get('/', (request, response) => {
+//   response.render('home');
+// });
 
 application.get('/login', (request, response) => {
   response.render('login');
@@ -135,7 +135,7 @@ application.post('/newgab', async (req, res) => {
   // console.log(req.body.message);
   // console.log(req.session.userId);
   // console.log('newGab');
-  const gab = await models.gab.create({
+  const gab = await models.gabs.create({
     messageId: req.session.userId,
     message: req.body.message
   })
@@ -144,9 +144,9 @@ application.post('/newgab', async (req, res) => {
     res.redirect('/');
 });
 
-application.get('/home', async (req, res) => {
+application.get('/', async (req, res) => {
   // if (req.session.user) {
- var userGabs = await models.gab.findAll ({
+ var userGabs = await models.gabs.findAll({
   order: [['createdAt', 'DESC']],
   // include: [models.Users, models.Like]
     });
@@ -156,9 +156,9 @@ application.get('/home', async (req, res) => {
    coffee.userGabs = userGabs;
     console.log(coffee)
     console.log(coffee.dataValues)
-    console.log(coffee.userGabs)
-    console.log(coffee.dataValues.userGabs)
-    res.render('/home', {coffee});
+    
+    
+    res.render('home', {coffee});
 // }else {
 //     res.redirect('/signup');
 //   }
